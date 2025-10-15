@@ -14,16 +14,155 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      candidates: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          program: string | null
+          team: Database["public"]["Enums"]["team_name"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          program?: string | null
+          team: Database["public"]["Enums"]["team_name"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          program?: string | null
+          team?: Database["public"]["Enums"]["team_name"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          category: Database["public"]["Enums"]["event_category"]
+          created_at: string | null
+          description: string | null
+          event_date: string | null
+          id: string
+          max_points: number | null
+          name: string
+          stage: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["event_category"]
+          created_at?: string | null
+          description?: string | null
+          event_date?: string | null
+          id?: string
+          max_points?: number | null
+          name: string
+          stage?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["event_category"]
+          created_at?: string | null
+          description?: string | null
+          event_date?: string | null
+          id?: string
+          max_points?: number | null
+          name?: string
+          stage?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      results: {
+        Row: {
+          candidate_id: string
+          created_at: string | null
+          event_id: string
+          id: string
+          points: number | null
+          position: number | null
+          remarks: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string | null
+          event_id: string
+          id?: string
+          points?: number | null
+          position?: number | null
+          remarks?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          points?: number | null
+          position?: number | null
+          remarks?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "results_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "results_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      event_category: "music" | "dance" | "literary" | "arts"
+      team_name: "MAMLUK" | "SELJUK"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +289,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      event_category: ["music", "dance", "literary", "arts"],
+      team_name: ["MAMLUK", "SELJUK"],
+    },
   },
 } as const
