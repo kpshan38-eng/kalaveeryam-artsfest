@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Shield, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/kalaveeryam-logo.png";
+import { supabase } from "@/integrations/supabase/client";
 
 const Admin = () => {
   const [password, setPassword] = useState("");
@@ -14,27 +15,27 @@ const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleLogin = (e: React.FormEvent) => {
+  useEffect(() => {
+    // Ensure admin user exists (idempotent)
+    supabase.functions.invoke("bootstrap-admin").catch(() => {});
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
-    // Simple password check (will be enhanced with Supabase)
-    setTimeout(() => {
-      if (password === "shanukpshan1") {
-        toast({
-          title: "Login Successful",
-          description: "Welcome to the admin dashboard",
-        });
-        navigate("/admin/dashboard");
-      } else {
-        toast({
-          title: "Login Failed",
-          description: "Incorrect password. Please try again.",
-          variant: "destructive",
-        });
-      }
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: "admin@kalaveeryam.local",
+        password,
+      });
+      if (error) throw error;
+      toast({ title: "Login Successful", description: "Welcome to the admin dashboard" });
+      navigate("/admin/dashboard");
+    } catch (err: any) {
+      toast({ title: "Login Failed", description: err.message ?? "Incorrect password.", variant: "destructive" });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
